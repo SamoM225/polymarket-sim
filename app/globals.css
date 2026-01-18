@@ -13,10 +13,11 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  /* Dark mode disabled for this white theme */
+  /* :root {
     --background: #0a0a0a;
     --foreground: #ededed;
-  }
+  } */
 }
 
 body {
