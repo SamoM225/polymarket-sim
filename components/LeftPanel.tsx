@@ -123,9 +123,25 @@ export default function LeftPanel({
           })}
         </div>
 
-        <div className="flex justify-between items-center mb-2">
-           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Schedule</h2>
-           <span className="text-[10px] text-gray-400">{format(weekDays[0], 'd')} - {format(weekDays[6], 'd MMM')}</span>
+        <div className="flex justify-between items-center mb-3">
+           <button
+             onClick={() => onDateChange(addDays(currentDate, -7))}
+             className="px-2 py-1 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+             title="Previous week"
+           >
+             ←
+           </button>
+           <div className="text-center">
+             <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Schedule</h2>
+             <span className="text-[10px] text-gray-400">{format(weekDays[0], 'd')} - {format(weekDays[6], 'd MMM')}</span>
+           </div>
+           <button
+             onClick={() => onDateChange(addDays(currentDate, 7))}
+             className="px-2 py-1 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+             title="Next week"
+           >
+             →
+           </button>
         </div>
         <div className="flex justify-between gap-1">
           {weekDays.map((date) => {
