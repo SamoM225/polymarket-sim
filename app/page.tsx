@@ -115,7 +115,7 @@ export default function Home() {
       },
       startTime: supabaseMatch.start_time,
       status: supabaseMatch.status === 'OPEN' ? 'SCHEDULED' : 
-              supabaseMatch.status === 'LOCKED' ? 'LIVE' : 'FINISHED',
+              supabaseMatch.status === 'LOCKED' ? 'LIVE' : 'RESOLVED',
       currentScore: { 
         home: supabaseMatch.home_goals ?? 0, 
         away: supabaseMatch.away_goals ?? 0 
