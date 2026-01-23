@@ -100,6 +100,7 @@ export default function Home() {
       id: supabaseMatch.id,
       title: supabaseMatch.title,
       sport: supabaseMatch.sport ?? null,
+      aiResponse: supabaseMatch.ai_response ?? null,
       league: {
         id: 'converted',
         name: 'Polymarket',

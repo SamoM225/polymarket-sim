@@ -4,6 +4,7 @@ import { Lock } from 'lucide-react';
 import PriceChart from '../PriceChart';
 import OrderBook from '../OrderBook';
 import { formatOutcomePrice } from '../OutcomePrice';
+import AiResponsePanel from './AiResponsePanel';
 import type { Match, SupabaseMatch, Outcome, MultiOutcomeMatchState } from '@/types';
 import type { Region } from '../Navbar';
 
@@ -111,6 +112,8 @@ export default function MultiOutcomePanel({
           )}
         </div>
       </div>
+
+      <AiResponsePanel matchId={match.id} aiResponse={supabaseMatch?.ai_response ?? null} />
 
       <div className="flex border-b border-gray-200 px-4">
         <button

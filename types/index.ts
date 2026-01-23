@@ -22,6 +22,7 @@ export interface Match {
   id: string;
   title?: string;
   sport?: string | null;
+  aiResponse?: string | null;
   league: League;
   homeTeam: Team;
   awayTeam: Team;
@@ -90,6 +91,7 @@ export type SupabaseMatch = {
   home_team: string;
   away_team: string;
   sport?: string | null;
+  ai_response?: string | null;
   home_goals?: number;
   away_goals?: number;
   simulation_minute?: number;

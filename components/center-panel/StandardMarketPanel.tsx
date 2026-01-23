@@ -3,6 +3,7 @@ import { Lock } from 'lucide-react';
 import PriceChart from '../PriceChart';
 import OrderBook from '../OrderBook';
 import OutcomePrice from '../OutcomePrice';
+import AiResponsePanel from './AiResponsePanel';
 import type { Match, Outcome } from '@/types';
 import type { Region } from '../Navbar';
 
@@ -23,6 +24,7 @@ interface StandardMarketPanelProps {
   activeTab: 'chart' | 'orderbook';
   onTabChange: (tab: 'chart' | 'orderbook') => void;
   onUnlockMarket: () => void;
+  aiResponse?: string | null;
   selectedOutcomeIds: string[];
   outcomes: Outcome[];
   displayOutcomes: DisplayOutcome[];
@@ -46,6 +48,7 @@ export default function StandardMarketPanel({
   activeTab,
   onTabChange,
   onUnlockMarket,
+  aiResponse,
   selectedOutcomeIds,
   outcomes,
   displayOutcomes,
@@ -241,6 +244,8 @@ export default function StandardMarketPanel({
           </div>
         </div>
       </div>
+
+      <AiResponsePanel matchId={match.id} aiResponse={aiResponse} />
 
       <div className="flex border-b border-gray-200 px-4">
         <button

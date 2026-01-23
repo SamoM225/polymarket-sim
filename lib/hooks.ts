@@ -171,7 +171,7 @@ export function useMatches(options?: { enableRealtime?: boolean; enableOutcomesR
       const { data, error: err } = await supabase
         .from('matches')
         .select(`
-          id, title, start_time, home_team, away_team, sport, status, home_goals, away_goals, simulation_minute, match_state,
+          id, title, start_time, home_team, away_team, sport, status, home_goals, away_goals, simulation_minute, match_state, ai_response,
           markets (
             id, type, liquidity_usdc, status, risk_multiplier,
             outcomes (id, outcome_slug, label, pool, current_fee_rate)

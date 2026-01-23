@@ -246,6 +246,7 @@ export default function CenterPanel({
       activeTab={activeTab}
       onTabChange={setActiveTab}
       onUnlockMarket={handleUnlockMarket}
+      aiResponse={supabaseMatch?.ai_response ?? match.aiResponse ?? null}
       selectedOutcomeIds={selectedOutcomeIds}
       outcomes={outcomes}
       displayOutcomes={displayOutcomes}
