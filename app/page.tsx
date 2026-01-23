@@ -47,6 +47,12 @@ export default function Home() {
   }, [supabaseMatches, selectedMatchId]);
   const selectedMarketId = selectedSupabaseMatchRaw?.markets?.[0]?.id ?? null;
   const { outcomes: selectedOutcomes } = useOutcomesRealtime(selectedMarketId);
+  const selectedOutcomesForMarket = useMemo(() => {
+    if (!selectedMarketId || selectedOutcomes.length === 0) return [];
+    const outcomeMarketId = selectedOutcomes.find(outcome => outcome.market_id)?.market_id;
+    if (outcomeMarketId && outcomeMarketId !== selectedMarketId) return [];
+    return selectedOutcomes;
+  }, [selectedMarketId, selectedOutcomes]);
 
   const convertSupabaseMatch = (supabaseMatch: SupabaseMatch): Match => {
     const [titleHome, titleAway] = supabaseMatch.title.split(' vs ').map(t => t.trim());
@@ -136,12 +142,12 @@ export default function Home() {
   const matchesWithData = useMemo(() => {
     return supabaseMatches.map(sm => {
       const marketId = sm.markets?.[0]?.id;
-      if (selectedMarketId && marketId === selectedMarketId && selectedOutcomes.length > 0) {
+      if (selectedMarketId && marketId === selectedMarketId && selectedOutcomesForMarket.length > 0) {
         const merged = {
           ...sm,
           markets: (sm.markets || []).map(market => 
             market.id === selectedMarketId
-              ? { ...market, outcomes: selectedOutcomes }
+              ? { ...market, outcomes: selectedOutcomesForMarket }
               : market
           )
         };
@@ -149,7 +155,7 @@ export default function Home() {
       }
       return { match: convertSupabaseMatch(sm), supabaseMatch: sm };
     });
-  }, [supabaseMatches, selectedMarketId, selectedOutcomes]);
+  }, [supabaseMatches, selectedMarketId, selectedOutcomesForMarket]);
 
   const selectedMatchData = useMemo(() => {
     if (!selectedMatchId) return null;
@@ -159,7 +165,10 @@ export default function Home() {
   const selectedMatch = selectedMatchData?.match ?? null;
   const selectedSupabaseMatch = selectedMatchData?.supabaseMatch ?? null;
   const selectedMarket = selectedSupabaseMatch?.markets?.[0];
-  const selectedMarketType = resolveMarketType(selectedMarket?.type ?? null, selectedMarket?.outcomes || []);
+  const selectedMarketOutcomes = selectedOutcomesForMarket.length > 0
+    ? selectedOutcomesForMarket
+    : (selectedMarket?.outcomes || []);
+  const selectedMarketType = resolveMarketType(selectedMarket?.type ?? null, selectedMarketOutcomes);
 
   const marketStatusByMatchId = useMemo(() => {
     return supabaseMatches.reduce<Record<string, string | undefined>>((acc, match) => {
@@ -195,7 +204,7 @@ export default function Home() {
       return;
     }
 
-    const outcomes = selectedMarket?.outcomes || [];
+    const outcomes = selectedMarketOutcomes;
     if (outcomes.length === 0) {
       setSelectedOutcomeIds([]);
       setActiveOutcomeId(null);
@@ -214,7 +223,7 @@ export default function Home() {
 
     setSelectedOutcomeIds(defaultId ? [defaultId] : []);
     setActiveOutcomeId(defaultId || null);
-  }, [selectedSupabaseMatch?.id, selectedMarketType, selectedMarket?.id]);
+  }, [selectedSupabaseMatch?.id, selectedMarketOutcomes.length, selectedMarketType, selectedMarket?.id]);
 
   useEffect(() => {
     if (region === 'EU') {
@@ -262,7 +271,7 @@ export default function Home() {
           <CenterPanel 
             match={selectedMatch} 
             supabaseMatch={selectedSupabaseMatch}
-            realtimeOutcomes={selectedOutcomes}
+            realtimeOutcomes={selectedOutcomesForMarket}
             selectedOutcomeIds={selectedOutcomeIds}
             activeOutcomeId={activeOutcomeId}
             onOutcomeSelectionChange={handleOutcomeSelectionChange}
@@ -280,7 +289,7 @@ export default function Home() {
              selectedOutcomeIds={selectedOutcomeIds}
              activeOutcomeId={activeOutcomeId}
              supabaseMatch={selectedSupabaseMatch}
-             realtimeOutcomes={selectedOutcomes}
+             realtimeOutcomes={selectedOutcomesForMarket}
              marketType={selectedMarketType}
              betType={betType}
              onBetTypeChange={setBetType}

@@ -52,6 +52,7 @@ export interface Match {
 
 export type Outcome = {
   id: string;
+  market_id?: string;
   outcome_slug: string;
   label: string;
   pool: number;

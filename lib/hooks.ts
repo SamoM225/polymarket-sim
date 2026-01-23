@@ -162,8 +162,16 @@ export function useMatches(options?: { enableRealtime?: boolean; enableOutcomesR
   const [matches, setMatches] = useState<SupabaseMatch[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retryCountRef = useRef(0);
+  const maxRetries = 3;
 
   const fetchMatches = useCallback(async () => {
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -184,10 +192,18 @@ export function useMatches(options?: { enableRealtime?: boolean; enableOutcomesR
       }
 
       setMatches((data || []) as SupabaseMatch[]);
+      retryCountRef.current = 0;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch matches';
       setError(errorMessage);
       console.error('❌ Error fetching matches:', err);
+      retryCountRef.current += 1;
+      if (retryCountRef.current <= maxRetries) {
+        const delayMs = 1500 * Math.pow(2, retryCountRef.current - 1);
+        retryTimerRef.current = setTimeout(() => {
+          fetchMatches();
+        }, delayMs);
+      }
     } finally {
       setLoading(false);
     }
@@ -197,7 +213,12 @@ export function useMatches(options?: { enableRealtime?: boolean; enableOutcomesR
     fetchMatches();
 
     if (!enableRealtime) {
-      return;
+      return () => {
+        if (retryTimerRef.current) {
+          clearTimeout(retryTimerRef.current);
+          retryTimerRef.current = null;
+        }
+      };
     }
 
     const unsubscribe = realtimeManager.subscribe('matches-realtime', {
@@ -304,6 +325,10 @@ export function useMatches(options?: { enableRealtime?: boolean; enableOutcomesR
       unsubscribe();
       unsubscribeMarkets();
       unsubscribeOutcomes();
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = null;
+      }
     };
   }, [fetchMatches, enableRealtime, enableOutcomesRealtime]);
 

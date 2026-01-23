@@ -51,6 +51,9 @@ export function useOutcomesRealtime(marketId: string | null | undefined) {
   }, [fetchOutcomes]);
 
   useEffect(() => {
+    setOutcomes([]);
+    setError(null);
+
     fetchOutcomes();
 
     if (!marketId) return;
