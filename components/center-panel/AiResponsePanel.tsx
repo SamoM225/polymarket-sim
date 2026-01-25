@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import ReactMarkdown from 'react-markdown';
+import { useEffect, useMemo, useState } from 'react';
+import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { X } from 'lucide-react';
 
@@ -101,34 +101,42 @@ const sortEntries = (entries: AiResponseEntry[]) => {
   });
 };
 
-const markdownComponents = {
-  p: ({ children }: { children: ReactNode }) => (
+const markdownComponents: Components = {
+  p: ({ children }) => (
     <p className="text-sm text-amber-900 leading-relaxed">{children}</p>
   ),
-  strong: ({ children }: { children: ReactNode }) => (
+  strong: ({ children }) => (
     <strong className="font-semibold text-amber-900">{children}</strong>
   ),
-  em: ({ children }: { children: ReactNode }) => (
+  em: ({ children }) => (
     <em className="italic text-amber-900">{children}</em>
   ),
-  ul: ({ children }: { children: ReactNode }) => (
+  ul: ({ children }) => (
     <ul className="list-disc list-inside space-y-1">{children}</ul>
   ),
-  ol: ({ children }: { children: ReactNode }) => (
+  ol: ({ children }) => (
     <ol className="list-decimal list-inside space-y-1">{children}</ol>
   ),
-  li: ({ children }: { children: ReactNode }) => (
+  li: ({ children }) => (
     <li className="text-sm text-amber-900">{children}</li>
   ),
-  code: ({ children }: { children: ReactNode }) => (
-    <code className="rounded bg-amber-100/70 px-1 py-0.5 text-[12px] text-amber-900">{children}</code>
+  code: ({ children, className, ...props }) => (
+    <code
+      className={['rounded bg-amber-100/70 px-1 py-0.5 text-[12px] text-amber-900', className]
+        .filter(Boolean)
+        .join(' ')}
+      {...props}
+    >
+      {children}
+    </code>
   ),
-  a: ({ href, children }: { href?: string; children: ReactNode }) => (
+  a: ({ href, children, ...props }) => (
     <a
       href={href}
       target="_blank"
       rel="noreferrer"
       className="text-amber-800 underline decoration-amber-400 underline-offset-2 hover:text-amber-900"
+      {...props}
     >
       {children}
     </a>
