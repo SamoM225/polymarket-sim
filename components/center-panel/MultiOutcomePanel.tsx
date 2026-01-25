@@ -113,34 +113,34 @@ export default function MultiOutcomePanel({
         </div>
       </div>
 
-      <AiResponsePanel matchId={match.id} aiResponse={supabaseMatch?.ai_response ?? null} />
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <AiResponsePanel matchId={match.id} aiResponse={supabaseMatch?.ai_response ?? null} />
 
-      <div className="flex border-b border-gray-200 px-4">
-        <button
-          onClick={() => onTabChange('chart')}
-          className={clsx(
-            'px-4 py-2.5 text-sm font-bold border-b-2 transition-colors',
-            activeTab === 'chart'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          )}
-        >
-          Price Chart
-        </button>
-        <button
-          onClick={() => onTabChange('orderbook')}
-          className={clsx(
-            'px-4 py-2.5 text-sm font-bold border-b-2 transition-colors',
-            activeTab === 'orderbook'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          )}
-        >
-          Order Book
-        </button>
-      </div>
+        <div className="flex border-b border-gray-200 px-4">
+          <button
+            onClick={() => onTabChange('chart')}
+            className={clsx(
+              'px-4 py-2.5 text-sm font-bold border-b-2 transition-colors',
+              activeTab === 'chart'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            )}
+          >
+            Price Chart
+          </button>
+          <button
+            onClick={() => onTabChange('orderbook')}
+            className={clsx(
+              'px-4 py-2.5 text-sm font-bold border-b-2 transition-colors',
+              activeTab === 'orderbook'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            )}
+          >
+            Order Book
+          </button>
+        </div>
 
-      <div className="flex-1 overflow-auto">
         {activeTab === 'chart' ? (
           <div className="p-4 space-y-4">
             <div className="h-[280px]">

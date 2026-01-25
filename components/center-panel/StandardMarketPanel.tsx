@@ -103,176 +103,176 @@ export default function StandardMarketPanel({
         </div>
       </div>
 
-      <div className="px-4 py-4 border-b border-gray-100">
-        <div className="flex items-center justify-between">
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">
-                {match.homeTeam.shortName?.slice(0, 2) || match.homeTeam.name.slice(0, 2)}
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="px-4 py-4 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">
+                  {match.homeTeam.shortName?.slice(0, 2) || match.homeTeam.name.slice(0, 2)}
+                </div>
+                <span className="text-sm font-semibold text-gray-800">{match.homeTeam.name}</span>
               </div>
-              <span className="text-sm font-semibold text-gray-800">{match.homeTeam.name}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">
-                {match.awayTeam.shortName?.slice(0, 2) || match.awayTeam.name.slice(0, 2)}
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">
+                  {match.awayTeam.shortName?.slice(0, 2) || match.awayTeam.name.slice(0, 2)}
+                </div>
+                <span className="text-sm font-semibold text-gray-800">{match.awayTeam.name}</span>
               </div>
-              <span className="text-sm font-semibold text-gray-800">{match.awayTeam.name}</span>
             </div>
-          </div>
 
-          {match.status === 'LIVE' && (
-            <div className="flex flex-col items-center gap-1 px-4">
-              <div className="text-2xl font-bold text-gray-900">{homeScore}</div>
-              <div className="w-4 h-0.5 bg-gray-300" />
-              <div className="text-2xl font-bold text-gray-900">{awayScore}</div>
-            </div>
-          )}
-
-          <div className="flex gap-2">
-            {category === 'BINARY' ? (
-              <>
-                {homeOutcome && (
-                  <button
-                    type="button"
-                    disabled={isMarketLocked}
-                    onClick={() => onSelectOutcome(homeOutcome.id)}
-                    className={clsx(
-                      'w-20 h-16 rounded-lg flex flex-col items-center justify-center transition-all border',
-                      selectedOutcomeIds.includes(homeOutcome.id)
-                        ? 'bg-green-100 border-green-400 ring-1 ring-green-200'
-                        : 'bg-white border-gray-200 hover:bg-gray-50',
-                      isMarketLocked && 'opacity-60 cursor-not-allowed'
-                    )}
-                  >
-                    <span className="text-[10px] font-semibold text-gray-500 uppercase">YES</span>
-                    <OutcomePrice
-                      probability={applyFee(homeOutcome.price, homeOutcome.id)}
-                      region={region}
-                      className="text-lg font-bold text-green-600"
-                    />
-                  </button>
-                )}
-                {awayOutcome && (
-                  <button
-                    type="button"
-                    disabled={isMarketLocked}
-                    onClick={() => onSelectOutcome(awayOutcome.id)}
-                    className={clsx(
-                      'w-20 h-16 rounded-lg flex flex-col items-center justify-center transition-all border',
-                      selectedOutcomeIds.includes(awayOutcome.id)
-                        ? 'bg-red-100 border-red-400 ring-1 ring-red-200'
-                        : 'bg-white border-gray-200 hover:bg-gray-50',
-                      isMarketLocked && 'opacity-60 cursor-not-allowed'
-                    )}
-                  >
-                    <span className="text-[10px] font-semibold text-gray-500 uppercase">NO</span>
-                    <OutcomePrice
-                      probability={applyFee(awayOutcome.price, awayOutcome.id)}
-                      region={region}
-                      className="text-lg font-bold text-red-600"
-                    />
-                  </button>
-                )}
-              </>
-            ) : (
-              <>
-                {homeOutcome && (
-                  <button
-                    type="button"
-                    disabled={isMarketLocked}
-                    onClick={() => onSelectOutcome(homeOutcome.id)}
-                    className={clsx(
-                      'w-16 h-16 rounded-lg flex flex-col items-center justify-center transition-all border',
-                      selectedOutcomeIds.includes(homeOutcome.id)
-                        ? 'bg-blue-100 border-blue-400 ring-1 ring-blue-200'
-                        : 'bg-white border-gray-200 hover:bg-gray-50',
-                      isMarketLocked && 'opacity-60 cursor-not-allowed'
-                    )}
-                  >
-                    <span className="text-[10px] font-semibold text-gray-500">{region === 'US' ? 'HOME' : '1'}</span>
-                    <OutcomePrice
-                      probability={applyFee(homeOutcome.price, homeOutcome.id)}
-                      region={region}
-                      className="text-lg font-bold text-blue-600"
-                    />
-                  </button>
-                )}
-                {drawOutcome && (
-                  <button
-                    type="button"
-                    disabled={isMarketLocked}
-                    onClick={() => onSelectOutcome(drawOutcome.id)}
-                    className={clsx(
-                      'w-16 h-16 rounded-lg flex flex-col items-center justify-center transition-all border',
-                      selectedOutcomeIds.includes(drawOutcome.id)
-                        ? 'bg-gray-200 border-gray-400 ring-1 ring-gray-300'
-                        : 'bg-white border-gray-200 hover:bg-gray-50',
-                      isMarketLocked && 'opacity-60 cursor-not-allowed'
-                    )}
-                  >
-                    <span className="text-[10px] font-semibold text-gray-500">{region === 'US' ? 'DRAW' : 'X'}</span>
-                    <OutcomePrice
-                      probability={applyFee(drawOutcome.price, drawOutcome.id)}
-                      region={region}
-                      className="text-lg font-bold text-gray-600"
-                    />
-                  </button>
-                )}
-                {awayOutcome && (
-                  <button
-                    type="button"
-                    disabled={isMarketLocked}
-                    onClick={() => onSelectOutcome(awayOutcome.id)}
-                    className={clsx(
-                      'w-16 h-16 rounded-lg flex flex-col items-center justify-center transition-all border',
-                      selectedOutcomeIds.includes(awayOutcome.id)
-                        ? 'bg-green-100 border-green-400 ring-1 ring-green-200'
-                        : 'bg-white border-gray-200 hover:bg-gray-50',
-                      isMarketLocked && 'opacity-60 cursor-not-allowed'
-                    )}
-                  >
-                    <span className="text-[10px] font-semibold text-gray-500">{region === 'US' ? 'AWAY' : '2'}</span>
-                    <OutcomePrice
-                      probability={applyFee(awayOutcome.price, awayOutcome.id)}
-                      region={region}
-                      className="text-lg font-bold text-green-600"
-                    />
-                  </button>
-                )}
-              </>
+            {match.status === 'LIVE' && (
+              <div className="flex flex-col items-center gap-1 px-4">
+                <div className="text-2xl font-bold text-gray-900">{homeScore}</div>
+                <div className="w-4 h-0.5 bg-gray-300" />
+                <div className="text-2xl font-bold text-gray-900">{awayScore}</div>
+              </div>
             )}
+
+            <div className="flex gap-2">
+              {category === 'BINARY' ? (
+                <>
+                  {homeOutcome && (
+                    <button
+                      type="button"
+                      disabled={isMarketLocked}
+                      onClick={() => onSelectOutcome(homeOutcome.id)}
+                      className={clsx(
+                        'w-20 h-16 rounded-lg flex flex-col items-center justify-center transition-all border',
+                        selectedOutcomeIds.includes(homeOutcome.id)
+                          ? 'bg-green-100 border-green-400 ring-1 ring-green-200'
+                          : 'bg-white border-gray-200 hover:bg-gray-50',
+                        isMarketLocked && 'opacity-60 cursor-not-allowed'
+                      )}
+                    >
+                      <span className="text-[10px] font-semibold text-gray-500 uppercase">YES</span>
+                      <OutcomePrice
+                        probability={applyFee(homeOutcome.price, homeOutcome.id)}
+                        region={region}
+                        className="text-lg font-bold text-green-600"
+                      />
+                    </button>
+                  )}
+                  {awayOutcome && (
+                    <button
+                      type="button"
+                      disabled={isMarketLocked}
+                      onClick={() => onSelectOutcome(awayOutcome.id)}
+                      className={clsx(
+                        'w-20 h-16 rounded-lg flex flex-col items-center justify-center transition-all border',
+                        selectedOutcomeIds.includes(awayOutcome.id)
+                          ? 'bg-red-100 border-red-400 ring-1 ring-red-200'
+                          : 'bg-white border-gray-200 hover:bg-gray-50',
+                        isMarketLocked && 'opacity-60 cursor-not-allowed'
+                      )}
+                    >
+                      <span className="text-[10px] font-semibold text-gray-500 uppercase">NO</span>
+                      <OutcomePrice
+                        probability={applyFee(awayOutcome.price, awayOutcome.id)}
+                        region={region}
+                        className="text-lg font-bold text-red-600"
+                      />
+                    </button>
+                  )}
+                </>
+              ) : (
+                <>
+                  {homeOutcome && (
+                    <button
+                      type="button"
+                      disabled={isMarketLocked}
+                      onClick={() => onSelectOutcome(homeOutcome.id)}
+                      className={clsx(
+                        'w-16 h-16 rounded-lg flex flex-col items-center justify-center transition-all border',
+                        selectedOutcomeIds.includes(homeOutcome.id)
+                          ? 'bg-blue-100 border-blue-400 ring-1 ring-blue-200'
+                          : 'bg-white border-gray-200 hover:bg-gray-50',
+                        isMarketLocked && 'opacity-60 cursor-not-allowed'
+                      )}
+                    >
+                      <span className="text-[10px] font-semibold text-gray-500">{region === 'US' ? 'HOME' : '1'}</span>
+                      <OutcomePrice
+                        probability={applyFee(homeOutcome.price, homeOutcome.id)}
+                        region={region}
+                        className="text-lg font-bold text-blue-600"
+                      />
+                    </button>
+                  )}
+                  {drawOutcome && (
+                    <button
+                      type="button"
+                      disabled={isMarketLocked}
+                      onClick={() => onSelectOutcome(drawOutcome.id)}
+                      className={clsx(
+                        'w-16 h-16 rounded-lg flex flex-col items-center justify-center transition-all border',
+                        selectedOutcomeIds.includes(drawOutcome.id)
+                          ? 'bg-gray-200 border-gray-400 ring-1 ring-gray-300'
+                          : 'bg-white border-gray-200 hover:bg-gray-50',
+                        isMarketLocked && 'opacity-60 cursor-not-allowed'
+                      )}
+                    >
+                      <span className="text-[10px] font-semibold text-gray-500">{region === 'US' ? 'DRAW' : 'X'}</span>
+                      <OutcomePrice
+                        probability={applyFee(drawOutcome.price, drawOutcome.id)}
+                        region={region}
+                        className="text-lg font-bold text-gray-600"
+                      />
+                    </button>
+                  )}
+                  {awayOutcome && (
+                    <button
+                      type="button"
+                      disabled={isMarketLocked}
+                      onClick={() => onSelectOutcome(awayOutcome.id)}
+                      className={clsx(
+                        'w-16 h-16 rounded-lg flex flex-col items-center justify-center transition-all border',
+                        selectedOutcomeIds.includes(awayOutcome.id)
+                          ? 'bg-green-100 border-green-400 ring-1 ring-green-200'
+                          : 'bg-white border-gray-200 hover:bg-gray-50',
+                        isMarketLocked && 'opacity-60 cursor-not-allowed'
+                      )}
+                    >
+                      <span className="text-[10px] font-semibold text-gray-500">{region === 'US' ? 'AWAY' : '2'}</span>
+                      <OutcomePrice
+                        probability={applyFee(awayOutcome.price, awayOutcome.id)}
+                        region={region}
+                        className="text-lg font-bold text-green-600"
+                      />
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <AiResponsePanel matchId={match.id} aiResponse={aiResponse} />
+        <AiResponsePanel matchId={match.id} aiResponse={aiResponse} />
 
-      <div className="flex border-b border-gray-200 px-4">
-        <button
-          onClick={() => onTabChange('chart')}
-          className={clsx(
-            'px-4 py-2.5 text-sm font-bold border-b-2 transition-colors',
-            activeTab === 'chart'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          )}
-        >
-          Price Chart
-        </button>
-        <button
-          onClick={() => onTabChange('orderbook')}
-          className={clsx(
-            'px-4 py-2.5 text-sm font-bold border-b-2 transition-colors',
-            activeTab === 'orderbook'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          )}
-        >
-          Order Book
-        </button>
-      </div>
+        <div className="flex border-b border-gray-200 px-4">
+          <button
+            onClick={() => onTabChange('chart')}
+            className={clsx(
+              'px-4 py-2.5 text-sm font-bold border-b-2 transition-colors',
+              activeTab === 'chart'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            )}
+          >
+            Price Chart
+          </button>
+          <button
+            onClick={() => onTabChange('orderbook')}
+            className={clsx(
+              'px-4 py-2.5 text-sm font-bold border-b-2 transition-colors',
+              activeTab === 'orderbook'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            )}
+          >
+            Order Book
+          </button>
+        </div>
 
-      <div className="flex-1 overflow-auto">
         {activeTab === 'chart' ? (
           <div className="p-4">
             <div className="h-[400px]">

@@ -156,13 +156,36 @@ const buildBucketRange = (hoursBack: number, bucketMinutes: number) => {
   };
 };
 
+const areMatchesEqual = (prev: SupabaseMatch[], next: SupabaseMatch[]): boolean => {
+  if (prev === next) return true;
+  if (prev.length !== next.length) return false;
+  try {
+    return JSON.stringify(prev) === JSON.stringify(next);
+  } catch {
+    return false;
+  }
+};
+
 // Zoznam zapasov s realtime update
-export function useMatches(options?: { enableRealtime?: boolean; enableOutcomesRealtime?: boolean }) {
-  const { enableRealtime = true, enableOutcomesRealtime = false } = options || {};
+export function useMatches(options?: { 
+  enableRealtime?: boolean; 
+  enableOutcomesRealtime?: boolean; 
+  pollIntervalMs?: number;
+  realtimeMatchId?: string | null;
+  realtimeMarketId?: string | null;
+}) {
+  const { 
+    enableRealtime = false, 
+    enableOutcomesRealtime = false, 
+    pollIntervalMs = 60000,
+    realtimeMatchId = null,
+    realtimeMarketId = null
+  } = options || {};
   const [matches, setMatches] = useState<SupabaseMatch[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const retryCountRef = useRef(0);
   const maxRetries = 3;
 
@@ -191,7 +214,8 @@ export function useMatches(options?: { enableRealtime?: boolean; enableOutcomesR
         throw err;
       }
 
-      setMatches((data || []) as SupabaseMatch[]);
+      const nextMatches = (data || []) as SupabaseMatch[];
+      setMatches(prev => (areMatchesEqual(prev, nextMatches) ? prev : nextMatches));
       retryCountRef.current = 0;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch matches';
@@ -212,17 +236,37 @@ export function useMatches(options?: { enableRealtime?: boolean; enableOutcomesR
   useEffect(() => {
     fetchMatches();
 
-    if (!enableRealtime) {
+    if (pollTimerRef.current) {
+      clearInterval(pollTimerRef.current);
+      pollTimerRef.current = null;
+    }
+
+    if (pollIntervalMs > 0) {
+      pollTimerRef.current = setInterval(() => {
+        fetchMatches();
+      }, pollIntervalMs);
+    }
+
+    if (!enableRealtime || !realtimeMatchId) {
       return () => {
         if (retryTimerRef.current) {
           clearTimeout(retryTimerRef.current);
           retryTimerRef.current = null;
         }
+        if (pollTimerRef.current) {
+          clearInterval(pollTimerRef.current);
+          pollTimerRef.current = null;
+        }
       };
     }
 
-    const unsubscribe = realtimeManager.subscribe('matches-realtime', {
+    const matchChannel = `matches-realtime:${realtimeMatchId}`;
+    const marketChannel = `markets-realtime:${realtimeMatchId}`;
+    const outcomesChannel = realtimeMarketId ? `outcomes-realtime:${realtimeMarketId}` : '';
+
+    const unsubscribe = realtimeManager.subscribe(matchChannel, {
       table: 'matches',
+      filter: `id=eq.${realtimeMatchId}`,
       onInsert: (data: SupabaseMatch) => {
         fetchMatches();
       },
@@ -237,8 +281,9 @@ export function useMatches(options?: { enableRealtime?: boolean; enableOutcomesR
       }
     });
 
-    const unsubscribeMarkets = realtimeManager.subscribe('markets-realtime', {
+    const unsubscribeMarkets = realtimeManager.subscribe(marketChannel, {
       table: 'markets',
+      filter: `match_id=eq.${realtimeMatchId}`,
       onInsert: (market: Market & { match_id: string }) => {
         setMatches(prev => prev.map(match => {
           if (match.id === market.match_id) {
@@ -273,9 +318,10 @@ export function useMatches(options?: { enableRealtime?: boolean; enableOutcomesR
       },
     });
 
-    const unsubscribeOutcomes = enableOutcomesRealtime
-      ? realtimeManager.subscribe('outcomes-realtime', {
+    const unsubscribeOutcomes = enableOutcomesRealtime && realtimeMarketId
+      ? realtimeManager.subscribe(outcomesChannel, {
           table: 'outcomes',
+          filter: `market_id=eq.${realtimeMarketId}`,
           onInsert: (outcome: Outcome & { market_id: string }) => {
             setMatches(prev => prev.map(match => ({
               ...match,
@@ -329,8 +375,12 @@ export function useMatches(options?: { enableRealtime?: boolean; enableOutcomesR
         clearTimeout(retryTimerRef.current);
         retryTimerRef.current = null;
       }
+      if (pollTimerRef.current) {
+        clearInterval(pollTimerRef.current);
+        pollTimerRef.current = null;
+      }
     };
-  }, [fetchMatches, enableRealtime, enableOutcomesRealtime]);
+  }, [fetchMatches, enableRealtime, enableOutcomesRealtime, pollIntervalMs, realtimeMatchId, realtimeMarketId]);
 
   return { matches, loading, error, refetch: fetchMatches };
 }

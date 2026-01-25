@@ -40,7 +40,12 @@ export default function Home() {
   
   const [region, setRegion] = useState<Region>('EU');
 
-  const { matches: supabaseMatches } = useMatches({ enableOutcomesRealtime: false });
+  const { matches: supabaseMatches } = useMatches({ 
+    enableRealtime: Boolean(selectedMatchId),
+    enableOutcomesRealtime: false,
+    pollIntervalMs: 60000,
+    realtimeMatchId: selectedMatchId
+  });
   const selectedSupabaseMatchRaw = useMemo(() => {
     if (!selectedMatchId) return null;
     return supabaseMatches.find(match => match.id === selectedMatchId) || null;
